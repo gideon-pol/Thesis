@@ -34,7 +34,6 @@ void synthesis(bool* halted){
 			0x00ff0000,
 			0x00000000
 	};
-//#pragma HLS ARRAY_PARTITION variable=instructions complete dim=0
 
 	ROM program = ROM((Bit32*)&instructions);
 	CPU cpu = CPU(program);

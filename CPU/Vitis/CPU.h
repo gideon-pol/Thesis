@@ -16,17 +16,16 @@ public:
 
 	void Start(){
 		static Bit32 registers[4];
-//		#pragma HLS ARRAY_PARTITION variable=registers complete dim=0
+		#pragma HLS ARRAY_PARTITION variable=registers complete dim=0
 		std::cout << std::hex;
-		int d = 0;
 
 		while(!stopped){
 		#pragma HLS pipeline II=4
-			IR = Instruction(rom.Get(PC));
-			LITR = rom.Get(PC+1);
+			Instruction IR = Instruction(rom.Get(PC));
+			Bit32 LITR = rom.Get(PC+1);
 
-			std::cout << "op code: " << IR.GetOpCode() << std::endl;
-			if(IR.GetOpCode() == OP_STOP){
+			std::cout << "op code: " << IR.OpCode << std::endl;
+			if(IR.OpCode == OP_STOP){
 				stopped = true;
 				std::cout << "<<------- CPU halted ------->>" << std::endl;
 			}
@@ -34,12 +33,12 @@ public:
 			std::cout << "IR: " << IR.Data << std::endl;
 			std::cout << "LITR: " << LITR << std::endl;
 
-			RA = registers[IR.GetRegister1()];
-			RB = registers[IR.GetRegister2()];
+			Bit32 RA = registers[IR.Register1];
+			Bit32 RB = registers[IR.Register2];
 			std::cout << "RA: " << RA << " RB: " << RB << std::endl;
-			inputY = IR.UsesLiteral() ? LITR : RB;
+			Bit32 inputY = IR.UsesLiteral ? LITR : RB;
 
-
+			Bit32 computedValue;
 			if(IR.ReadsMemory()){
 				computedValue = ram.Get(inputY.range(15, 0));
 				std::cout << "RAM: " << " read value " << computedValue << " from " << inputY.range(15, 0) << std::endl;
@@ -48,10 +47,9 @@ public:
 				std::cout << "ALU: " << computedValue << std::endl;
 			}
 
-
 			if(IR.WritesToRegister()){
-				std::cout << "REGISTER: Writing " << computedValue << " to register " << IR.GetRegister1() << std::endl;
-				registers[IR.GetRegister1()] = computedValue;
+				std::cout << "REGISTER: Writing " << computedValue << " to register " << IR.Register1 << std::endl;
+				registers[IR.Register1] = computedValue;
 			}
 
 			if(IR.WritesToMemory()){
@@ -63,29 +61,16 @@ public:
 				std::cout << "Jumping to address " << inputY.range(15, 0) << std::endl;
 				PC = inputY.range(15, 0);
 			} else {
-				PC += IR.UsesLiteral() ? 2 : 1;
+				PC += IR.UsesLiteral ? 2 : 1;
 			}
-			d++;
 		}
 	}
 private:
-	enum Stage {Fetch, Decode, Execute, Store};
-	Stage stage = Stage::Fetch;
 	ROM rom;
 	RAM ram;
 	ALU alu;
 
-	Instruction IR;
-	Bit32 LITR;
 	Address PC = 0;
-
-	Bit32 RA;
-	Bit32 RB;
-
-	Bit32 inputY;
-
-	Bit32 computedValue;
-
 
 	bool stopped = false;
 };

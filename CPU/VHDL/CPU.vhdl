@@ -9,12 +9,12 @@ entity CPU is
   Port (
     clock : in std_logic;
     reset : in std_logic;
---    op : out std_logic_vector(7 downto 0);
     halted: out std_logic
   );
 end CPU;
 
 architecture structure of CPU is
+--    these may be uncommented for simulation
 --    signal clock : STD_LOGIC := '0';
 --    signal reset : STD_LOGIC := '0';
 --    signal halted : STD_LOGIC := '0';
@@ -62,6 +62,7 @@ architecture structure of CPU is
     signal input_y : STD_LOGIC_VECTOR(31 downto 0);
 begin
 
+--    this may be uncommented for simulation
 --reset <= '1', '0' after 10 ns;
 
 --process

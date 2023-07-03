@@ -10,7 +10,7 @@ entity RAM is
     data_out : out STD_LOGIC_VECTOR(31 downto 0) := x"00000000");
 end RAM;
 
-architecture rtl of RAM is
+architecture behavior of RAM is
     type ram_arr is array(integer range <>) of STD_LOGIC_VECTOR(31 downto 0);
     signal data : ram_arr(0 to 1023);
 begin
@@ -27,5 +27,4 @@ begin
         end if;
     end if;
 end process;
-
 end architecture;

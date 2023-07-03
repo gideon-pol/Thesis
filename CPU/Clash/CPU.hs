@@ -47,15 +47,10 @@ data CPUState = CPUState
     , stage :: CPUStage
     } deriving (Show, Generic, NFDataX)
 
--- second instruction value
--- siv :: Register -> Bool -> Value -> RegisterFile -> Value
--- siv reg lit litr regs = if lit then litr else readRegister regs reg
-
 toAddr :: Value -> Address
 toAddr val = fromInteger $ toInteger $ slice d15 d0 val
 
 cycle :: CPUState -> Value -> (CPUState, (Address, Maybe (Address, Value), Instruction))
--- -- cycle ((CPUState regs rom ram ir litr pc flags stage), b) = case stage of
 cycle (CPUState regs rom ir litr pc inputX inputY aluOut flags stage) ramOut = case stage of
     Halted -> ((CPUState regs rom ir litr pc inputX inputY aluOut flags Halted), (0, Nothing, ir))
 
@@ -115,49 +110,6 @@ cycle (CPUState regs rom ir litr pc inputX inputY aluOut flags stage) ramOut = c
             UnOp op r True -> (pc + 2)
             Stop -> pc
             _ -> pc + 1
-
-
--- cycle :: CPUState -> CPUState
--- cycle (CPUState regs rom ram ir litr pc flags stage) = case stage of
---     Halted -> CPUState regs rom ram ir litr pc flags Halted
-
---     StageFetch -> (CPUState regs rom ram ir' litr' pc flags StageExecute) where
---         ir' = decodeInstruction $ readROM rom pc
---         litr' = readROM rom (pc + 1)
---     StageExecute -> case ir of
---         Stop -> CPUState regs rom ram ir litr pc flags Halted
---         _ -> CPUState regs' rom ram' ir litr pc flags' StageStore where
---                 regs' = case ir of
---                         BinOp Mov r1 r2 lit -> writeRegister regs r1 (siv r2 lit litr regs)
---                         BinOp Add r1 r2 lit -> writeRegister regs r1 ((readRegister regs r1) + (siv r2 lit litr regs))
---                         BinOp Sub r1 r2 lit -> writeRegister regs r1 ((readRegister regs r1) - (siv r2 lit litr regs))
---                         BinOp Mul r1 r2 lit -> writeRegister regs r1 ((readRegister regs r1) * (siv r2 lit litr regs))
---                         -- BinOp Div r1 r2 lit -> writeRegister regs r1 ((pack $ readRegister regs r1) `div` (pack $ siv r2 lit litr regs))
---                         BinOp Load r1 r2 lit -> writeRegister regs r1 (readRAM ram (toAddr $ siv r2 lit litr regs))
---                         _ -> regs
---                 flags' = case ir of
---                         BinOp Cmp r1 r2 lit -> result
---                                 where
---                                         reg1 = readRegister regs r1
---                                         reg2 = siv r2 lit litr regs
---                                         result = case reg1 `compare` reg2 of
---                                                 LT -> 0b001
---                                                 EQ -> 0b010
---                                                 GT -> 0b100
---                         _ -> flags
---                 ram' = case ir of
---                         BinOp Store r1 r2 lit -> writeRAM ram (toAddr $ readRegister regs r1) (siv r2 lit litr regs)
---                         _ -> ram
---     StageStore -> CPUState regs rom ram ir litr pc' flags StageFetch where
---         pc' = case ir of
---                 UnOp Jmp r lit -> (toAddr $ siv r lit litr regs)
---                 UnOp JE r lit -> if flags == 0b010 then (toAddr $ siv r lit litr regs) else (pc + (if lit then 2 else 1))
---                 UnOp JNE r lit -> if flags /= 0b010 then (toAddr $ siv r lit litr regs) else (pc + (if lit then 2 else 1))
---                 UnOp JG r lit -> if flags == 0b100 then (toAddr $ siv r lit litr regs) else (pc + (if lit then 2 else 1))
---                 UnOp JS r lit -> if flags == 0b001 then (toAddr $ siv r lit litr regs) else (pc + (if lit then 2 else 1))
---                 BinOp op r1 r2 True -> (pc + 2)
---                 Stop -> pc
---                 _ -> pc + 1
 
 data UnOpType = Jmp | JE | JNE | JG | JS deriving (Show, Generic, NFDataX)
 data BinOpType = Mov | Load | Store | Add | Sub | Mul | Div | Cmp deriving (Show, Generic, NFDataX)
@@ -249,8 +201,8 @@ program = CPUState registers rom ir litr pc inputX inputY out flags StageFetch w
             0x00000000 :>
             Nil
         )
-    ir = NOP --decodeInstruction $ readROM rom pc
-    litr = 0 --readROM rom (pc + 1)
+    ir = NOP
+    litr = 0
     pc = 0
     inputX = 0
     inputY = 0
@@ -260,16 +212,3 @@ program = CPUState registers rom ir litr pc inputX inputY out flags StageFetch w
 
 topEntity :: Clock System -> Reset System -> Enable System -> Signal System (BitVector 8)
 topEntity = exposeClockResetEnable $ cpuHardware program
-
--- main :: IO()
--- main = do
-    -- let init = cpuHardware program
-
-    -- putStrLn $ show $ init
-
-testBench :: Signal System (BitVector 8)
-testBench = op where
-    op = topEntity clk rst en
-    en = enableGen
-    rst = systemResetGen
-    clk = tbSystemClockGen (pure True)

@@ -5,16 +5,15 @@
 class ALU {
 public:
 	Bit32 Calculate(Instruction instr, Bit32 input1, Bit32 input2){
-//#pragma HLS DATAFLOW
-		switch(instr.GetOpCode()){
-			case 0b00011000:
+		switch(instr.OpCode){
+			case OP_CMP:
 				compareInt(input1, input2);
 				break;
 		}
 
-		switch(instr.GetOpCode().range(7, 4)){
+		switch(instr.OpCode.range(7, 4)){
 			case 0b0001:
-				return calculateInt(instr.GetOpCode(), input1, input2);
+				return calculateInt(instr.OpCode, input1, input2);
 			case 0b0010:
 				break;
 			case 0b0011:
@@ -27,14 +26,14 @@ public:
 	}
 
 	bool CmpFlagRaised(Instruction instr){
-		switch(instr.GetOpCode()){
-			case 0b01000001:
+		switch(instr.OpCode){
+			case OP_JE:
 				return equalFlag;
-			case 0b01000010:
+			case OP_JNE:
 				return !equalFlag;
-			case 0b01000011:
+			case OP_JG:
 				return greaterThanFlag;
-			case 0b01000100:
+			case OP_JS:
 				return smallerThanFlag;
 		}
 
@@ -55,14 +54,8 @@ private:
 				return input1 - input2;
 			case 0b0010:
 				return input1 * input2;
-//			case 0b011:
-//				return input1 / input2;
 			case 0b0100:
 				return -input1;
-//			case 0b101:
-//				return (int)input1 << (int)input2;
-//			case 0b110:
-//				return (int)input1 >> (int)input2;
 		}
 
 		return 0;
