@@ -17,10 +17,9 @@ end FIRFilter;
 
 architecture behav of FIRFilter is
     type TapArray is array (0 to TAP_COUNT-1) of signed(DATA_WIDTH-1 downto 0);
+    type RegArray is array (0 to TAP_COUNT) of signed(DATA_WIDTH-1 downto 0);
     signal taps : TapArray := (others => to_signed(5, DATA_WIDTH));
     signal m_result : TapArray;
-    
-    type RegArray is array (0 to TAP_COUNT) of signed(DATA_WIDTH-1 downto 0);
     signal a_result : RegArray;
 
 begin
@@ -35,17 +34,17 @@ begin
     begin
         process (clk)
         begin
-            if rising_edge(clk) then
-                if reset = '1' then
-                    reg <= to_signed(0, DATA_WIDTH);
-                else
+            if reset = '1' then
+                reg <= to_signed(0, DATA_WIDTH);
+            else
+                if rising_edge(clk) then
                     reg <= resize(m_result(i) + a_result(i+1), DATA_WIDTH);
                 end if;
             end if;
         end process;
-       
+
         a_result(i) <= reg;
     end generate;
-    
+
     output <= a_result(0);
 end behav;
