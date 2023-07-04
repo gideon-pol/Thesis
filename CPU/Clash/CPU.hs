@@ -1,3 +1,7 @@
+-- Parts of this design may be accredited to:
+-- https://hackage.haskell.org/package/clash-prelude-0.9/docs/CLaSH-Prelude-BlockRam.html (cpuHardware function)
+-- https://yager.io/CPU/CPU1.html (methodology and structure of the program)
+
 module Example.CPU where
 
 import Clash.Prelude hiding (cycle)
