@@ -29,11 +29,6 @@ begin
         if rising_edge(read_clock) then
             RA <= registers(to_integer(unsigned(ra_select)));
             RB <= registers(to_integer(unsigned(rb_select)));
-            report "REGISTERFILE: reading "&
-                integer'image(to_integer(unsigned(ra_select)))&":"&
-                integer'image(to_integer(unsigned(registers(to_integer(unsigned(ra_select))))))&" "&
-                integer'image(to_integer(unsigned(rb_select)))&":"&
-                integer'image(to_integer(unsigned(registers(to_integer(unsigned(rb_select))))));
                 
         end if;
     end if;
@@ -45,7 +40,6 @@ begin
         registers <= (others=>x"00000000");
     else
         if rising_edge(write_clock) then
-            report "REGISTERFILE: register " & integer'image(to_integer(unsigned(ra_select))) & " was assigned the value " & integer'image(to_integer(unsigned(write_in)));
             registers(to_integer(unsigned(ra_select))) <= write_in;
         end if;
     end if;

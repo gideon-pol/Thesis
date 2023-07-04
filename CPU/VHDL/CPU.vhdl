@@ -142,7 +142,6 @@ begin
     else
         if rising_edge(stage_store) then
             if write_pc='1' and cmp_flag='1' then
-                report "PC: jumping to address " & integer'image(to_integer(unsigned(input_y(15 downto 0))));
                 pc <= input_y(15 downto 0);
             else
                 case literal_flag is
@@ -164,7 +163,6 @@ begin
         if rising_edge(stage_fetch) then
             ir <= rom_d0;
             litr <= rom_d1;
-            report "LITR: " & integer'image(to_integer(unsigned(litr)));
         end if;
     end if;
 end process;
@@ -175,7 +173,6 @@ begin
     reg1 <= ir(15 downto 12);
     reg2 <= ir(11 downto 8);
     literal_flag <= ir(1);
-    report "IR: op code of next instruction: " & integer'image(to_integer(unsigned(op_code)));
 end process;
 
 process(op_code)

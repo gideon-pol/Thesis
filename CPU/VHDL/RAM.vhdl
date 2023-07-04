@@ -19,10 +19,8 @@ process(clock)
 begin
     if(rising_edge(clock)) then
         if(write='1') then
-            report "RAM: writing " & integer'image(to_integer(unsigned(data_in))) & " to address " & integer'image(to_integer(unsigned(addr)));
             data(to_integer(unsigned(addr))) <= data_in;
         else
-            report "RAM: reading " & integer'image(to_integer(signed(data(to_integer(unsigned(addr)))))) & " from: " & integer'image(to_integer(unsigned(addr)));
             data_out <= data(to_integer(unsigned(addr)));
         end if;
     end if;

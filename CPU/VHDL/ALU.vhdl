@@ -24,12 +24,10 @@ architecture Behavioral of ALU is
     begin
         
         if op_code = "0000" then
-            report "int addition coming in";
             return STD_LOGIC_VECTOR(resize(signed(input_1) + signed(input_2), 32));
         elsif op_code = "0001" then
             return STD_LOGIC_VECTOR(resize(signed(input_1) - signed(input_2), 32));
         elsif op_code = "0010" then
-            report "int miltiplication coming in";
             return STD_LOGIC_VECTOR(resize(signed(input_1) * signed(input_2), 32));
         else
             return input_1;
