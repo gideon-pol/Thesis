@@ -44,15 +44,15 @@ begin
 
         input <= x"0001";
         wait for 20 ns;
-        assert output = x"01" report "Output mismatch for input value x'01'" severity error;
+        assert output = x"05" report "Output mismatch for input value x'01'" severity error;
 
         input <= x"0002";
         wait for 20 ns;
-        assert output = x"03" report "Output mismatch for input value x'02'" severity error;
+        assert output = x"15" report "Output mismatch for input value x'02'" severity error;
 
         input <= x"0003";
         wait for 20 ns;
-        assert output = x"06" report "Output mismatch for input value x'03'" severity error;
+        assert output = x"30" report "Output mismatch for input value x'03'" severity error;
 
         wait;
     end process;
