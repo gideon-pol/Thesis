@@ -1,0 +1,1 @@
+The test_program.vasm file contains an assembly type program that was compiled to bytecode and put into the ROMs of every implementation. It contains basic operations to test each implementation.

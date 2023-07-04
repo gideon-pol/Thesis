@@ -1,0 +1,20 @@
+MOV %RA, 0
+MOV %RB, 1
+
+MOV %RD, 10
+
+STORE %RA, 0
+
+$label:
+MUL %RB, 2
+LOAD %RA, %RA
+
+ADD %RA, 1
+
+SUB %RD, 1
+
+STORE %RA, %RA
+
+CMP %RA, 10
+JS $label
+STOP
