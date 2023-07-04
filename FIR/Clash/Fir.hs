@@ -1,3 +1,5 @@
+-- This design was derived from http://adamwalker.github.io/Filter-Design-in-Clash/
+
 module Example.Fir where
 
 import Clash.Prelude
